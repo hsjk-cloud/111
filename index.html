@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>提前 10 天的约会申请</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: #fff;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(129, 140, 248, 0.35), transparent 32%),
+        radial-gradient(circle at 80% 10%, rgba(236, 72, 153, 0.24), transparent 28%),
+        linear-gradient(135deg, #020617, #0f172a 50%, #312e81);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+    .wrap { width: 100%; max-width: 900px; animation: fadeUp .75s ease both; }
+    .card {
+      border-radius: 28px;
+      overflow: hidden;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 30px 90px rgba(0,0,0,.45);
+      backdrop-filter: blur(18px);
+    }
+    .hero { padding: 36px 34px; border-bottom: 1px solid rgba(255,255,255,.12); }
+    .tag { display: flex; align-items: center; gap: 8px; color: #c7d2fe; font-size: 14px; margin-bottom: 16px; }
+    h1 { margin: 0 0 16px; font-size: clamp(32px, 6vw, 56px); line-height: 1.08; letter-spacing: -1px; }
+    p { margin: 0; line-height: 1.8; color: #e2e8f0; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 26px 30px; }
+    .info, .panel {
+      border-radius: 24px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.13);
+      padding: 20px;
+    }
+    .icon { font-size: 25px; margin-bottom: 10px; }
+    .label { color: #94a3b8; font-size: 14px; margin-bottom: 6px; }
+    .value { font-size: 18px; font-weight: 700; }
+    .main { padding: 0 30px 34px; }
+    .dark { background: rgba(2,6,23,.52); margin-bottom: 18px; }
+    h2 { margin: 0 0 18px; font-size: 22px; }
+    .item { display: flex; gap: 12px; margin: 13px 0; color: #e2e8f0; }
+    .letter { margin-bottom: 18px; }
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    button {
+      border: 0;
+      border-radius: 18px;
+      height: 48px;
+      padding: 0 20px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 700;
+      transition: transform .15s ease, filter .15s ease;
+    }
+    button:hover { transform: translateY(-1px); filter: brightness(1.06); }
+    .approve { background: #6366f1; color: white; }
+    .reschedule { background: rgba(255,255,255,.92); color: #0f172a; }
+    .result {
+      display: none;
+      margin-top: 18px;
+      border-radius: 22px;
+      padding: 18px;
+      animation: pop .25s ease both;
+    }
+    .ok { background: rgba(16,185,129,.16); border: 1px solid rgba(110,231,183,.35); color: #d1fae5; }
+    .later { background: rgba(245,158,11,.16); border: 1px solid rgba(252,211,77,.35); color: #fef3c7; }
+    .footer { text-align: center; color: #94a3b8; font-size: 14px; margin-top: 16px; }
+    .confetti {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+    }
+    .piece {
+      position: absolute;
+      top: -20px;
+      width: 8px;
+      height: 14px;
+      border-radius: 3px;
+      animation: fall 1.8s linear forwards;
+    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pop { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: scale(1); } }
+    @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+    @media (max-width: 760px) {
+      .grid { grid-template-columns: 1fr; padding: 22px; }
+      .hero, .main { padding-left: 22px; padding-right: 22px; }
+      button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="confetti" id="confetti"></div>
+
+  <main class="wrap">
+    <section class="card">
+      <div class="hero">
+        <div class="tag">✨ Date Request System · v1.0</div>
+        <h1>一份提前 10 天提交的约会申请</h1>
+        <p>根据你提出的「提前 10 天预约机制」，本系统已自动生成一份正式但不太正经的约会申请。</p>
+      </div>
+
+      <div class="grid">
+        <div class="info">
+          <div class="icon">📅</div>
+          <div class="label">拟预约日期</div>
+          <div class="value" id="targetDate">计算中...</div>
+        </div>
+        <div class="info">
+          <div class="icon">⏱️</div>
+          <div class="label">提前量</div>
+          <div class="value">T + 10 天，合规提交</div>
+        </div>
+        <div class="info">
+          <div class="icon">📍</div>
+          <div class="label">地点策略</div>
+          <div class="value">你方便优先，我负责规划</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="panel dark">
+          <h2>💌 Proposed Plan</h2>
+          <div class="item"><span>🍽️</span><span>吃一顿不用你费脑子选的饭</span></div>
+          <div class="item"><span>🚶</span><span>饭后散步，允许你吐槽工作，我负责认真听</span></div>
+          <div class="item"><span>☕</span><span>如果你还有电量，就追加一杯咖啡/甜品</span></div>
+          <div class="item"><span>🔁</span><span>如果当天太累，可无压力改期，不扣好感分</span></div>
+        </div>
+
+        <div class="panel letter">
+          <p>
+            尊敬的 XX 老师：<br />
+            我已认真学习并执行你的排期规则。本次申请的核心目标不是占用你的休息时间，
+            而是希望在你方便的时候，获得一段不用处理工作、只需要放松的快乐时间。
+          </p>
+        </div>
+
+        <div class="actions">
+          <button class="approve" onclick="approve()">✅ 批准申请</button>
+          <button class="reschedule" onclick="reschedule()">☕ 改期但保留申请</button>
+        </div>
+
+        <div id="approvedMsg" class="result ok">✅ 申请已批准。申请人将进入「开心但努力保持淡定」状态。</div>
+        <div id="rescheduleMsg" class="result later">🔁 收到，系统将重新调度。申请依然有效，喜欢你这件事不受排期影响。</div>
+      </div>
+    </section>
+
+    <div class="footer">Generated by 一个正在学习提前规划的 INTJ</div>
+  </main>
+
+  <script>
+    const d = new Date();
+    d.setDate(d.getDate() + 10);
+    document.getElementById('targetDate').textContent = d.toLocaleDateString('zh-CN', {
+      month: 'long', day: 'numeric', weekday: 'long'
+    });
+
+    function approve() {
+      document.getElementById('approvedMsg').style.display = 'block';
+      document.getElementById('rescheduleMsg').style.display = 'none';
+      launchConfetti();
+    }
+
+    function reschedule() {
+      document.getElementById('rescheduleMsg').style.display = 'block';
+      document.getElementById('approvedMsg').style.display = 'none';
+    }
+
+    function launchConfetti() {
+      const box = document.getElementById('confetti');
+      const colors = ['#818cf8', '#f472b6', '#34d399', '#facc15', '#ffffff'];
+      for (let i = 0; i < 48; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'piece';
+        piece.style.left = Math.random() * 100 + 'vw';
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.animationDelay = Math.random() * 0.35 + 's';
+        piece.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
+        box.appendChild(piece);
+        setTimeout(() => piece.remove(), 2200);
+      }
+    }
+  </script>
+</body>
+</html>
